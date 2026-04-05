@@ -1,0 +1,457 @@
+{% extends 'admin_dashboard/base.html' %}
+
+{% block title %}
+    Gestión de Mascotas - Vetify Admin
+{% endblock %}
+
+{% block page_title %}
+    Gestión de Mascotas
+{% endblock %}
+
+{% block extra_css %}
+<style>
+
+    .filters-bar {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .filters-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+        gap: 1rem;
+        align-items: end;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: .5rem;
+    }
+
+    .filter-label {
+        font-size: .875rem;
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .filter-input {
+        padding: .625rem;
+        border: 1px solid #d1d5db;
+        border-radius: .5rem;
+        font-size: .875rem;
+    }
+
+    .filter-input:focus {
+        outline: none;
+        border-color: #38bdf8;
+    }
+
+    .btn {
+        padding: .625rem 1.25rem;
+        border: none;
+        border-radius: .5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: .3s;
+        font-size: .875rem;
+    }
+
+    .btn-primary {
+        background: #38bdf8;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #0284c7;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: .75rem;
+        padding: 1rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,.1);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: .75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .stat-icon-blue { background:#dbeafe; }
+    .stat-icon-pink { background:#fce7f3; }
+    .stat-icon-purple { background:#e9d5ff; }
+
+    .stat-info { flex:1; }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color:#0f172a;
+    }
+
+    .stat-label {
+        font-size: .75rem;
+        color:#6b7280;
+    }
+
+    .table-container {
+        background:white;
+        border-radius:1rem;
+        padding:1.5rem;
+        box-shadow:0 1px 3px rgba(0,0,0,.1);
+    }
+
+    .table-header {
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:1.5rem;
+    }
+
+    .table-title {
+        font-size:1.25rem;
+        font-weight:700;
+        color:#0f172a;
+    }
+
+    .table-count {
+        color:#6b7280;
+        font-size:.875rem;
+    }
+
+    .pets-grid {
+        display:grid;
+        grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+        gap:1rem;
+    }
+
+    .pet-card {
+        background:linear-gradient(135deg,#f0f9ff 0%,#ffffff 100%);
+        border:1px solid #e0f2fe;
+        border-radius:.75rem;
+        padding:1.25rem;
+        transition:.3s;
+    }
+
+    .pet-card:hover {
+        border-color:#38bdf8;
+        box-shadow:0 4px 12px rgba(56,189,248,.2);
+        transform:translateY(-2px);
+    }
+
+    .pet-header {
+        display:flex;
+        gap:1rem;
+        margin-bottom:1rem;
+    }
+
+    .pet-avatar {
+        width:60px;
+        height:60px;
+        border-radius:.75rem;
+        background:linear-gradient(135deg,#bfdbfe 0%,#93c5fd 100%);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:2rem;
+    }
+
+    .pet-info h3 {
+        font-size:1.125rem;
+        font-weight:700;
+        color:#0f172a;
+        margin-bottom:.25rem;
+    }
+
+    .pet-owner {
+        font-size:.875rem;
+        color:#6b7280;
+    }
+
+    .pet-details {
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:.5rem;
+        margin-bottom:1rem;
+        padding:.75rem;
+        background:white;
+        border-radius:.5rem;
+    }
+
+    .detail-item {
+        font-size:.75rem;
+        color:#6b7280;
+    }
+
+    .detail-item strong {
+        color:#0f172a;
+    }
+
+    .badge {
+        display:inline-block;
+        padding:.25rem .75rem;
+        border-radius:9999px;
+        font-size:.75rem;
+        font-weight:600;
+        margin-bottom:.5rem;
+    }
+
+    .badge-dog { background:#dbeafe;color:#1e40af; }
+    .badge-cat { background:#fce7f3;color:#9f1239; }
+    .badge-other { background:#e9d5ff;color:#6b21a8; }
+
+    .pet-actions {
+        display:flex;
+        gap:.5rem;
+        padding-top:1rem;
+        border-top:1px solid #e0f2fe;
+    }
+
+    .action-btn {
+        flex:1;
+        padding:.5rem;
+        border:none;
+        border-radius:.375rem;
+        font-size:.75rem;
+        font-weight:600;
+        cursor:pointer;
+        text-decoration:none;
+        text-align:center;
+    }
+
+    .btn-delete {
+        background:#fee2e2;
+        color:#991b1b;
+    }
+
+    .btn-delete:hover {
+        background:#fecaca;
+    }
+
+    .empty-state {
+        text-align:center;
+        padding:3rem;
+        color:#9ca3af;
+    }
+
+    .empty-icon {
+        font-size:3rem;
+        margin-bottom:1rem;
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="filters-bar">
+
+    <form method="GET">
+
+        <div class="filters-grid">
+
+            <div class="filter-group">
+                <label class="filter-label">
+                    Tipo de Mascota
+                </label>
+
+                <select name="type" class="filter-input">
+
+                    <option value="all" {% if type_filter == 'all' %}selected{% endif %}>
+                        Todas
+                    </option>
+
+                    <option value="dog" {% if type_filter == 'dog' %}selected{% endif %}>
+                        🐕 Perros
+                    </option>
+
+                    <option value="cat" {% if type_filter == 'cat' %}selected{% endif %}>
+                        🐈 Gatos
+                    </option>
+
+                    <option value="other" {% if type_filter == 'other' %}selected{% endif %}>
+                        🐰 Otros
+                    </option>
+
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">
+                    Buscar
+                </label>
+
+                <input
+                    type="text"
+                    name="search"
+                    class="filter-input"
+                    placeholder="Nombre, dueño, raza..."
+                    value="{{ search }}"
+                >
+            </div>
+
+            <div class="filter-group">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search"></i> Filtrar
+                </button>
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+        <div class="stat-icon stat-icon-blue">🐕</div>
+        <div class="stat-info">
+            <div class="stat-value">{{ total_dogs }}</div>
+            <div class="stat-label">Perros</div>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon stat-icon-pink">🐈</div>
+        <div class="stat-info">
+            <div class="stat-value">{{ total_cats }}</div>
+            <div class="stat-label">Gatos</div>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon stat-icon-purple">🐰</div>
+        <div class="stat-info">
+            <div class="stat-value">{{ total_others }}</div>
+            <div class="stat-label">Otros</div>
+        </div>
+    </div>
+
+</div>
+
+<div class="table-container">
+
+    <div class="table-header">
+
+        <div>
+            <h2 class="table-title">
+                <i class="bi bi-grid"></i> Listado de Mascotas
+            </h2>
+
+            <p class="table-count">
+                {{ total_count }} mascota{{ total_count|pluralize }}
+                encontrada{{ total_count|pluralize }}
+            </p>
+        </div>
+
+    </div>
+
+    {% if pets %}
+
+        <div class="pets-grid">
+
+            {% for pet in pets %}
+
+                <div class="pet-card">
+
+                    <div class="pet-header">
+                        <div class="pet-avatar">
+                            {{ pet.get_emoji }}
+                        </div>
+                        <div class="pet-info">
+                            <h3>{{ pet.name }}</h3>
+                            <p class="pet-owner">
+                                <i class="bi bi-person"></i>
+                                {{ pet.owner.username }}
+                            </p>
+                            <span class="badge badge-{{ pet.pet_type }}">
+                                {{ pet.get_pet_type_display }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="pet-details">
+                        <div class="detail-item">
+                            <strong>Edad:</strong>
+                            {{ pet.age }} año{{ pet.age|pluralize }}
+                        </div>
+                        <div class="detail-item">
+                            <strong>Peso:</strong>
+                            {{ pet.weight }} kg
+                        </div>
+                        {% if pet.breed %}
+                        <div class="detail-item">
+                            <strong>Raza:</strong>
+                            {{ pet.breed }}
+                        </div>
+                        {% endif %}
+                        <div class="detail-item">
+                            <strong>Vacunas:</strong>
+                            {% if pet.vaccination_status == 'updated' %}
+                                Al día
+                            {% elif pet.vaccination_status == 'pending' %}
+                                Pendiente
+                            {% else %}
+                                Sin vacunas
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="pet-actions">
+                        <a href="{% url 'edit_pet' pet.id %}?next={% url 'admin_dashboard:pets' %}" 
+                            class="action-btn" style="background:#dbeafe; color:#1e40af;">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+                        <a href="{% url 'admin_dashboard:delete_pet' pet.id %}" class="action-btn btn-delete"
+                        onclick="return confirm('¿Eliminar a {{ pet.name }}?')">
+                            <i class="bi bi-trash"></i> Eliminar
+                        </a>
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                <i class="bi bi-heart"></i>
+            </div>
+
+            <h3>No hay mascotas</h3>
+
+            <p>
+                No se encontraron mascotas con los filtros seleccionados
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "booking/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<section class="booking-page">
+    <div class="container">
+
+        <div class="booking-header">
+            <h2><i class="bi bi-calendar-plus"></i> Reservar una Cita</h2>
+            <p>Agenda una visita para tu mascota con nuestros especialistas veterinarios.</p>
+        </div>
+
+        <div class="booking-grid">
+
+            <div class="booking-card">
+                <form method="POST" class="booking-form">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+
+                    <button type="submit" class="booking-btn">
+                        <i class="bi bi-check-circle"></i>
+                        Confirmar Cita
+                    </button>
+                </form>
+            </div>
+
+            <div class="booking-image">
+                <img src="{% static 'images/dog.jpg' %}" alt="Mascota">
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}
